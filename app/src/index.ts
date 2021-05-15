@@ -26,6 +26,7 @@ import {
 } from './blindfold';
 import autocomplete from './lib/autocomplete';
 import { i18n } from './i18n';
+import { injectSpeechControls } from './speech/inject';
 
 /**
  * Prepare the extension code and run
@@ -99,6 +100,7 @@ function init() {
 
   markExtentionInit();
   renderBlindfold();
+  injectSpeechControls();
 }
 
 /**
