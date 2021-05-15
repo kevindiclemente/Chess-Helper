@@ -12,7 +12,7 @@ export const injectSpeechControls = async () => {
     actionButton.onclick = () => {
         RunRecognition(actionButton)
     };
-    actionButton.innerText = "👋 Hey Dan 🎤";
+    actionButton.innerText = "🎤";
     actionButtonSpan.className = "icon-font-chess ui_v5-button-icon";
 
     // parent custom html elements

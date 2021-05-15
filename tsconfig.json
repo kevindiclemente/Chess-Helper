@@ -3,7 +3,8 @@
     "target": "es6",
     "lib": [
         "ES2017",
-        "dom"
+        "dom",
+        "ESNext.String"
     ],
     "strict": true,
     "moduleResolution": "node",
