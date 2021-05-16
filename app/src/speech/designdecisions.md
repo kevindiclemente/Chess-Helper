@@ -1,0 +1,3 @@
+- should the button be on by default?
+    - privacy concerns with auto recording data
+    - our single user says he likes the button
