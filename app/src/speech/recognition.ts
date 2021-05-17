@@ -1,7 +1,8 @@
-import { go } from "../chess";
+import { go, parseMoveInput } from "../chess";
 import { getBoard } from "../chessboard";
-import { getGrammer } from "./grammer";
+import { getGrammar } from "./Grammar";
 import { setStatusSpanText } from "./inject";
+import { getNotation } from "./pieceSpeechData";
 import { SpeechStrings } from "./strings";
 
 declare const window: any;
@@ -41,7 +42,7 @@ const SetupRecognition = (statusSpan: HTMLElement, getIsListening: Function) => 
     console.log("Loading Recognition API");
     recognition = new window.webkitSpeechRecognition();
     speechRecognitionList = new window.webkitSpeechGrammarList();
-    speechRecognitionList.addFromString(getGrammer(), 1);
+    speechRecognitionList.addFromString(getGrammar(), 1);
     recognition.grammars = speechRecognitionList;
     recognition.continuous = true;
     recognition.lang = 'en-US';
@@ -82,19 +83,28 @@ const SetupRecognition = (statusSpan: HTMLElement, getIsListening: Function) => 
 }
 
 const processTranscript = (transcript: string, statusSpan: HTMLElement) => {
-    var sentence = transcript.toLowerCase().replaceAll(".", "").replaceAll(" ", "");
-    if (sentence.length === 4) {
-        const board = getBoard();
+    var sentence = transcript.toLowerCase().replaceAll(".", "");
+    var notation = getNotation(sentence);
+    if (notation) {
+        var moveInput = parseMoveInput(notation);
+        if (moveInput && moveInput.from) {
+            const board = getBoard();
 
-        if (board) {
-            const success = go(board, sentence);
-            board && board.clearMarkedArrows();
-            setStatusSpanText(SpeechStrings.StatusSpan.successStart + sentence + SpeechStrings.StatusSpan.successEnd);
-            return;
-        } else {
-            setStatusSpanText(SpeechStrings.StatusSpan.boardNotFound);
-            return;
+            if (board) {
+                // board.clearMarkedArrows();
+                // board.markArrow(moveInput.from, moveInput.to);
+                const success = go(board, notation);
+                setStatusSpanText(SpeechStrings.StatusSpan.successStart + sentence + SpeechStrings.StatusSpan.successEnd);
+                return;
+            } else {
+                setStatusSpanText(SpeechStrings.StatusSpan.boardNotFound);
+                return;
+            }
         }
+    }
+    
+    if (notation) {
+        
     } else {
         setStatusSpanText(SpeechStrings.StatusSpan.didNotUnderstandStart + transcript + SpeechStrings.StatusSpan.didNotUnderstandEnd);
         return;
