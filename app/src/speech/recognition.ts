@@ -1,5 +1,6 @@
 import { go, parseMoveInput } from "../chess";
 import { getBoard } from "../chessboard";
+import { getCommand } from "./commands";
 import { getGrammar } from "./Grammar";
 import { setStatusSpanText } from "./inject";
 import { getNotation } from "./pieceSpeechData";
@@ -9,19 +10,19 @@ declare const window: any;
 var recognition: any = undefined;
 var speechRecognitionList = undefined;
 
-export const StartRecognition = (statusSpan: HTMLElement, getIsListening: Function) => {
+export const StartRecognition = (getIsListening: Function) => {
     if (getIsListening()) {
         if (recognition != undefined) {
             recognition.stop();
         }
 
         // wipeout existing recongition objects incase they get foobared
-        SetupRecognition(statusSpan, getIsListening);
+        SetupRecognition(getIsListening);
         recognition.start();
     }
 }
 
-export const StopRecognition = (statusSpan: HTMLElement, getIsListening: Function) => {
+export const StopRecognition = (getIsListening: Function) => {
     if (getIsListening()) {
         console.error("Tried to stop recognition while still listening.");
     }
@@ -31,11 +32,11 @@ export const StopRecognition = (statusSpan: HTMLElement, getIsListening: Functio
     }
 }
 
-const SetupRecognition = (statusSpan: HTMLElement, getIsListening: Function) => {
+const SetupRecognition = (getIsListening: Function) => {
     const isTestScenario = false;
     if (isTestScenario) {
         // button.innerText = "TestScenario...";
-        processTranscript("e2e4", statusSpan);
+        processTranscript("e2e4");
         return;
     }
 
@@ -50,10 +51,14 @@ const SetupRecognition = (statusSpan: HTMLElement, getIsListening: Function) => 
     recognition.maxAlternatives = 1;
 
     recognition.onresult = function (event: any) {
-        var transcript = event.results[event.results.length - 1][0].transcript;
+        var result = event.results[event.results.length - 1];
+        var transcript = result[0].transcript;
+        for (var counter = 0; counter < result.length; counter++) {
+            console.log("Transcript received [0]: ", result);
+        }
         console.log("Transcript received: " + transcript);
         setStatusSpanText(SpeechStrings.StatusSpan.processing);
-        processTranscript(transcript, statusSpan)
+        processTranscript(transcript)
     }
 
     recognition.onstart = function () {
@@ -64,7 +69,7 @@ const SetupRecognition = (statusSpan: HTMLElement, getIsListening: Function) => 
         setStatusSpanText(SpeechStrings.StatusSpan.onEnd);
         if (getIsListening()) {
             console.log("restarting...");
-            StartRecognition(statusSpan, getIsListening);
+            StartRecognition(getIsListening);
         }
     }
 
@@ -82,8 +87,20 @@ const SetupRecognition = (statusSpan: HTMLElement, getIsListening: Function) => 
     console.log("Started Recognition API");
 }
 
-const processTranscript = (transcript: string, statusSpan: HTMLElement) => {
-    var sentence = transcript.toLowerCase().replaceAll(".", "");
+const punctuationToRemove = [".", ",", "-", "?"];
+
+const processTranscript = (transcript: string) => {
+    var sentence = transcript.toLowerCase();
+    for (var entry of punctuationToRemove) {
+        sentence = sentence.replaceAll(entry, "");
+    }
+
+    var command = getCommand(sentence);
+    if (command) {
+        command.action();
+        return;
+    }
+
     var notation = getNotation(sentence);
     if (notation) {
         var moveInput = parseMoveInput(notation);

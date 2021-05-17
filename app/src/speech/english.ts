@@ -9,7 +9,11 @@ export const pieceUtteranceList: PieceSpeechData[]  = [
     },
     {
         utterances: [
-            "rook"
+            "rook",
+            "rock",
+            "rocky",
+            "rick",
+            "wreck"
             // omitting "castle" and reserving it for the act of castling
         ],
         mapping: "R"
@@ -18,7 +22,8 @@ export const pieceUtteranceList: PieceSpeechData[]  = [
         utterances: [
             "knight",
             "night",
-            "nite"
+            "nite",
+            "nike"
         ],
         mapping: "N"
     },
@@ -99,10 +104,15 @@ export const columnUtteranceList: PieceSpeechData[]  = [
     {
         utterances: [
             "h",
-            "hotel"
+            "hotel",
+            "age"
         ],
         mapping: "h"
     }
+];
+
+export const rowColumnUtteranceList: PieceSpeechData[] = [
+
 ];
 
 export const rowUtteranceList: PieceSpeechData[]  = [

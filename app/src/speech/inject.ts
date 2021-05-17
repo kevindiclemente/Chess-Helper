@@ -33,9 +33,9 @@ export const injectSpeechControls = async () => {
         isListening = !isListening;
         setActionButtonText(actionButtonSpan, statusSpan);
         if (isListening) {
-            StartRecognition(statusSpan, getIsListening);
+            StartRecognition(getIsListening);
         } else {
-            StopRecognition(statusSpan, getIsListening);
+            StopRecognition(getIsListening);
         }
     };
 

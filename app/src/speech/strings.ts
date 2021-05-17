@@ -19,6 +19,11 @@ export namespace SpeechStrings {
         export const successStart = baseResultString;
         export const successEnd = "\n" + listening;
         export const processing = baseStatusString + "Processing...";
+
+        export namespace Puzzles {
+            export const noRestart = "Unable to find the restart button."
+            export const noNext = "Unable to find the next button."
+        }
     }
 }
 
